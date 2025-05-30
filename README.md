@@ -14,9 +14,11 @@ Run the app from the command line:
 
 ```sh
 poketop
+```
 
 Options include:
 
+```
     -h, --help — Show usage
 
     -v, --verbose — Verbose output
@@ -30,7 +32,7 @@ Options include:
 
 This project is licensed under the GNU General Public License v3.0. See the LICENSE file for details.
 
-This project uses wallpapers from giorgosioak/pokemon-wallpapers, which are licensed under the GNU General Public License v3.0.
+This project uses wallpapers from [giorgosioak/pokemon-wallpapers](https://github.com/giorgosioak/pokemon-wallpapers), which are licensed under the GNU General Public License v3.0.
 
 
-Let me know if you want to [dynamically download wallpapers at runtime](f) or [structure your repo to separate assets cleanly](f).
+**Let me know if you want to dynamically download wallpapers at runtime or clone at installation of my application.**
