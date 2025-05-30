@@ -26,6 +26,7 @@ ArgParser buildParser() {
     ..addFlag('version', negatable: false, help: 'Print the tool version.')
     ..addOption(
       'swww-arguments',
+      abbr: 'sw',
       help: 'Extra arguments to pass to swww img (e.g. "--transition-type any").',
       valueHelp: 'args',
     )
@@ -33,6 +34,12 @@ ArgParser buildParser() {
       'template',
       help: 'Save a .themers JSON with the given app name.',
       valueHelp: 'appName',
+    )
+    ..addOption(
+      'pokemon',
+      abbr: 'p',
+      help: 'Pick a specific Pokémon by name.',
+      valueHelp: 'pokemonName',
     );
 }
 
@@ -138,8 +145,21 @@ void main(List<String> arguments) async {
       return;
     }
 
-    // Pick Pokémon and save result BEFORE processing themers configs
-    final picked = await pickRandomPokemon(verbose: verbose);
+    // Pick Pokémon (from --pokemon or randomly) and save result BEFORE processing themers configs
+    String? chosenPokemon = results['pokemon'] as String?;
+    Map<String, dynamic> picked;
+    if (chosenPokemon != null && chosenPokemon.isNotEmpty) {
+      // User specified a Pokémon
+      final colors = await loadPokemonColors(verbose: verbose);
+      if (!colors.containsKey(chosenPokemon)) {
+        print('Error: Pokémon "$chosenPokemon" not found in color list.');
+        exit(1);
+      }
+      picked = {'pokemon': chosenPokemon, 'color': colors[chosenPokemon]};
+      if (verbose) print('[VERBOSE] Using user-picked Pokémon: $chosenPokemon');
+    } else {
+      picked = await pickRandomPokemon(verbose: verbose);
+    }
     await saveResult(picked['pokemon'], picked['color'], verbose: verbose);
 
     // Now process themers configs (themes will match the picked Pokémon)
@@ -149,7 +169,7 @@ void main(List<String> arguments) async {
     final wallpaperPath = await findWallpaper(picked['pokemon'], verbose: verbose);
     if (wallpaperPath != null) {
       final swwwArgs = results['swww-arguments'] as String?;
-      await ensureSwwwDaemon(verbose: verbose); // <-- Add this line
+      await ensureSwwwDaemon(verbose: verbose);
       await runSwww(wallpaperPath, extraArgs: swwwArgs, verbose: verbose);
     } else {
       print('Wallpaper not found for ${picked['pokemon']}');
