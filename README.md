@@ -8,7 +8,6 @@ Poketop is a command-line tool that randomly selects a Pokémon, saves the resul
 - Finds and sets a wallpaper for the chosen Pokémon using `swww`
 - Automatically starts the `swww-daemon` if not running
 - Supports extra arguments for `swww img` via `--swww-arguments`
-- Works in both dev (assets/) and prod (XDG data) environments
 
 ### Usage
 Run the app from the command line:
