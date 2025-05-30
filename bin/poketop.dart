@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:path/path.dart' as path;
 import 'swww_wrapper.dart';
 import 'template_init.dart';
+import 'template_parser.dart';
 
 const String version = '0.0.1';
 
@@ -111,8 +112,6 @@ Future<String?> findWallpaper(String pokemon, {bool verbose = false}) async {
   return null;
 }
 
-
-
 void main(List<String> arguments) async {
   final ArgParser argParser = buildParser();
   try {
@@ -139,8 +138,12 @@ void main(List<String> arguments) async {
       return;
     }
 
+    // Pick Pokémon and save result BEFORE processing themers configs
     final picked = await pickRandomPokemon(verbose: verbose);
     await saveResult(picked['pokemon'], picked['color'], verbose: verbose);
+
+    // Now process themers configs (themes will match the picked Pokémon)
+    await processThemersConfigs(verbose: verbose);
 
     // Find wallpaper and run swww if found
     final wallpaperPath = await findWallpaper(picked['pokemon'], verbose: verbose);
