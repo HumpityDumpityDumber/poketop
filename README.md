@@ -1,7 +1,5 @@
 ## Poketop
 
-Poketop is a command-line tool that randomly selects a Pokémon, saves the result to a JSON file, and sets your desktop wallpaper to a themed image of the chosen Pokémon using the `swww` wallpaper daemon. It supports both development and production environments, searching for wallpapers in local assets or in your XDG data directory. The tool also supports extra arguments for `swww img` and provides verbose output for debugging.
-
 ### Features
 - Randomly picks a Pokémon from a color list
 - Saves the result (Pokémon and color) to a JSON file
