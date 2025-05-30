@@ -23,8 +23,20 @@ Future<void> handleTemplateFlag(String appName, {bool verbose = false}) async {
     if (verbose) print('[VERBOSE] Using dev mode for .themers');
   }
 
-  // Write the JSON
-  final jsonContent = jsonEncode({'appName': appName});
+  // Write the JSON with pretty formatting
+  final encoder = JsonEncoder.withIndent('  ');
+  final jsonContent = encoder.convert({
+    'appName': appName,
+    'items': {
+      'desktopConfig': {
+        'location': 'templates/configs/$appName.<filetype>.template',
+        'destination': '',
+        'name': '$appName.<filetype>',
+        'type': 'config'
+      }
+    }
+  });
+
   final themersFile = File(path.join(themersDir.path, '$appName.json'));
   await themersFile.writeAsString(jsonContent);
   if (verbose) print('[VERBOSE] Saved $appName.json to ${themersFile.path}');
