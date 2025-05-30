@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:path/path.dart' as path;
 import 'swww_wrapper.dart';
+import 'themer_parser.dart';
 
 const String version = '0.0.1';
 
@@ -26,6 +27,11 @@ ArgParser buildParser() {
       'swww-arguments',
       help: 'Extra arguments to pass to swww img (e.g. "--transition-type any").',
       valueHelp: 'args',
+    )
+    ..addOption(
+      'template',
+      help: 'Save a .themers JSON with the given app name.',
+      valueHelp: 'appName',
     );
 }
 
@@ -123,6 +129,14 @@ void main(List<String> arguments) async {
     }
     if (results['verbose'] as bool) {
       verbose = true;
+    }
+
+    // Handle --template flag
+    final templateAppName = results['template'] as String?;
+    if (templateAppName != null && templateAppName.isNotEmpty) {
+      await handleTemplateFlag(templateAppName, verbose: verbose);
+      print('Template .themers created for appName: $templateAppName');
+      return;
     }
 
     final picked = await pickRandomPokemon(verbose: verbose);
