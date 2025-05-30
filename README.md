@@ -24,7 +24,11 @@ Options include:
     --version — Show version
 
     --swww-arguments — Extra arguments for swww img
+
+    --template <app name> - Creates themer file for application
 ```
+
+**If you would like to use the project and want proper documentation on configuring the automatic theming feel free to dm `raurutuchr` on discord.**
 
 ### License
 

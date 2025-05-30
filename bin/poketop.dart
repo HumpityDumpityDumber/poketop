@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:path/path.dart' as path;
 import 'swww_wrapper.dart';
-import 'themer_parser.dart';
+import 'template_init.dart';
 
 const String version = '0.0.1';
 

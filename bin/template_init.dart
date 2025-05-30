@@ -13,12 +13,12 @@ Future<void> handleTemplateFlag(String appName, {bool verbose = false}) async {
     // Use XDG_CONFIG_HOME or fallback to ~/.config
     final xdgConfigHome = Platform.environment['XDG_CONFIG_HOME'] ??
         path.join(Platform.environment['HOME'] ?? '', '.config');
-    themersDir = Directory(path.join(xdgConfigHome, 'poketop', '.themers'));
+    themersDir = Directory(path.join(xdgConfigHome, 'poketop', 'themers')); // changed from '.themers' to 'themers'
     if (!await themersDir.exists()) {
       await themersDir.create(recursive: true);
       if (verbose) print('[VERBOSE] Created directory ${themersDir.path}');
     }
-    if (verbose) print('[VERBOSE] Using prod mode for .themers');
+    if (verbose) print('[VERBOSE] Using prod mode for themers');
   } else {
     if (verbose) print('[VERBOSE] Using dev mode for .themers');
   }
