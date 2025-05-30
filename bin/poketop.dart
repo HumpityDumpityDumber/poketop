@@ -26,7 +26,6 @@ ArgParser buildParser() {
     ..addFlag('version', negatable: false, help: 'Print the tool version.')
     ..addOption(
       'swww-arguments',
-      abbr: 'sw',
       help: 'Extra arguments to pass to swww img (e.g. "--transition-type any").',
       valueHelp: 'args',
     )
