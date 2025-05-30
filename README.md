@@ -14,16 +14,23 @@ Poketop is a command-line tool that randomly selects a Pokémon, saves the resul
 Run the app from the command line:
 
 ```sh
-dart run bin/poketop.dart [options]
-```
+poketop
 
 Options include:
-- `-h`, `--help` — Show usage
-- `-v`, `--verbose` — Verbose output
-- `--version` — Show version
-- `--swww-arguments` — Extra arguments for `swww img`
 
----
+    -h, --help — Show usage
 
-## TODO
-- [ ] Add `config_templates/` file and add config template parser and executor
+    -v, --verbose — Verbose output
+
+    --version — Show version
+
+    --swww-arguments — Extra arguments for swww img
+
+License
+
+This project is licensed under the GNU General Public License v3.0. See the LICENSE file for details.
+
+This project uses wallpapers from giorgosioak/pokemon-wallpapers, which are licensed under the GNU General Public License v3.0.
+
+
+Let me know if you want to [dynamically download wallpapers at runtime](f) or [structure your repo to separate assets cleanly](f).
