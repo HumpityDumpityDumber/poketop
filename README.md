@@ -33,7 +33,7 @@ If you do not already have Dart installed, follow the instructions at [https://d
 - [swww](https://github.com/LGFae/swww) (for wallpaper setting)
 - (Optional, only for SVG-to-PNG/JPG conversion in var_asset): `rsvg-convert` (from `librsvg`/`librsvg2-bin`)
 
-#### Install Steps
+#### Install Steps (Local/User Install, No sudo needed)
 
 1. **Clone the repository:**
    ```sh
@@ -51,23 +51,26 @@ If you do not already have Dart installed, follow the instructions at [https://d
    dart compile exe bin/poketop.dart -o poketop
    ```
 
-4. **Copy the binary to a directory in your `$PATH`:**
+4. **Copy the binary to your user-local bin directory:**
    ```sh
-   sudo cp poketop /usr/local/bin/
-   # or for user-local install (no sudo):
-   # mkdir -p ~/.local/bin
-   # cp poketop ~/.local/bin/
-   # export PATH="$HOME/.local/bin:$PATH"
+   mkdir -p ~/.local/bin
+   cp poketop ~/.local/bin/
    ```
 
-5. **Copy the contents of the assets folder to your XDG data home:**
+5. **Ensure `~/.local/bin` is in your PATH (add to your shell profile if needed):**
+   ```sh
+   export PATH="$HOME/.local/bin:$PATH"
+   # Add the above line to your ~/.bashrc, ~/.zshrc, or ~/.profile for persistence
+   ```
+
+6. **Copy the contents of the assets folder to your XDG data home:**
    ```sh
    export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
    mkdir -p "$XDG_DATA_HOME/poketop"
    cp -r assets/* "$XDG_DATA_HOME/poketop/"
    ```
 
-6. **Ensure `swww` is installed:**
+7. **Ensure `swww` is installed:**
    - On Arch Linux:  
      ```sh
      sudo pacman -S swww
@@ -81,7 +84,7 @@ If you do not already have Dart installed, follow the instructions at [https://d
      sudo dnf install swww
      ```
 
-7. **(Optional, for SVG-to-PNG/JPG conversion in var_asset):**
+8. **(Optional, for SVG-to-PNG/JPG conversion in var_asset):**
    - On Arch Linux:  
      ```sh
      sudo pacman -S librsvg
@@ -125,6 +128,5 @@ Options include:
 This project is licensed under the GNU General Public License v3.0. See the LICENSE file for details.
 
 This project uses wallpapers from [giorgosioak/pokemon-wallpapers](https://github.com/giorgosioak/pokemon-wallpapers), which are licensed under the GNU General Public License v3.0.
-
 
 **Let me know if you want to dynamically download wallpapers at runtime or clone at installation of my application.**
