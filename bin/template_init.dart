@@ -30,7 +30,7 @@ Future<void> handleTemplateFlag(String appName, {bool verbose = false}) async {
     'color_mode': 'hex', // <-- add this line
     'items': {
       'desktopConfig': {
-        'location': 'templates/configs/$appName.<filetype>.template',
+        'location': '$appName.<filetype>.template',
         'destination': '',
         'name': '$appName.<filetype>',
         'type': 'config'
