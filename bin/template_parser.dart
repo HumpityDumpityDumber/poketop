@@ -83,6 +83,8 @@ String convertColor(String hex, String mode) {
       return 'rgba($r, $g, $b, $alpha)';
     case 'rrggbbaa':
       return '#$h';
+    case 'rrggbbaa-nohash':
+      return h;
     default:
       return '#${h.substring(0, 6)}';
   }
