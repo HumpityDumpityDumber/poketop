@@ -134,6 +134,60 @@ Future<void> processThemersConfigs({bool verbose = false}) async {
         if (verbose) {
           print('[VERBOSE] Copied asset to $destPath');
         }
+      } else if (item['type'] == 'var_asset') {
+        // Template is in templates/var_assets/ subdir for var_asset type
+        final templatePath = path.join(
+          themersDir.path,
+          'templates',
+          'var_assets',
+          item['location'] as String,
+        );
+        if (!await File(templatePath).exists()) {
+          if (verbose) print('[VERBOSE] Var asset template not found: $templatePath');
+          continue;
+        }
+        String template = await File(templatePath).readAsString();
+
+        // Prepare replacements (same as config)
+        final replacements = <String, String>{
+          r'$POKEMON_COLOR': pokemonColor,
+          r'$POKEMON_NAME': pokemonName,
+          r'$WALLPAPER_PATH': wallpaperPath,
+          ...vars,
+        };
+
+        final parsed = replaceVars(template, replacements);
+
+        final destDir = Directory(item['destination'] as String);
+        if (!await destDir.exists()) {
+          await destDir.create(recursive: true);
+        }
+        final destPath = path.join(destDir.path, item['name'] as String);
+
+        final ext = path.extension(destPath).toLowerCase();
+        if (ext == '.svg') {
+          await File(destPath).writeAsString(parsed);
+          if (verbose) print('[VERBOSE] Wrote var_asset SVG to $destPath');
+        } else if (ext == '.png' || ext == '.jpg' || ext == '.jpeg') {
+          // Write to a temp SVG, then convert using rsvg-convert
+          final tmpSvg = '$destPath.tmp.svg';
+          await File(tmpSvg).writeAsString(parsed);
+          final format = ext == '.png' ? 'png' : 'jpeg';
+          final result = await Process.run(
+            'rsvg-convert',
+            ['-f', format, '-o', destPath, tmpSvg],
+          );
+          await File(tmpSvg).delete();
+          if (result.exitCode != 0) {
+            print('Error converting SVG to $ext: ${result.stderr}');
+            continue;
+          }
+          if (verbose) print('[VERBOSE] Converted var_asset SVG to $destPath');
+        } else {
+          // Default: just write as text
+          await File(destPath).writeAsString(parsed);
+          if (verbose) print('[VERBOSE] Wrote var_asset as text to $destPath');
+        }
       }
       // ...other types can be handled here...
     }
