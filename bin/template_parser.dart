@@ -66,7 +66,7 @@ String convertColor(String hex, String mode) {
     // Expand shorthand (e.g. #abc -> #aabbcc)
     h = h.split('').map((c) => '$c$c').join();
   }
-  if (h.length == 6) h = h + 'FF'; // Add alpha if missing
+  if (h.length == 6) h = '${h}FF'; // Add alpha if missing
 
   int r = int.parse(h.substring(0, 2), radix: 16);
   int g = int.parse(h.substring(2, 4), radix: 16);
