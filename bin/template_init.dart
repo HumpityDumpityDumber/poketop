@@ -27,6 +27,7 @@ Future<void> handleTemplateFlag(String appName, {bool verbose = false}) async {
   final encoder = JsonEncoder.withIndent('  ');
   final jsonContent = encoder.convert({
     'appName': appName,
+    'color_mode': 'hex', // <-- add this line
     'items': {
       'desktopConfig': {
         'location': 'templates/configs/$appName.<filetype>.template',

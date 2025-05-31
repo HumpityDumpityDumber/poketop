@@ -58,6 +58,36 @@ String replaceVars(
   return result;
 }
 
+/// Converts a hex color string to the requested color mode.
+String convertColor(String hex, String mode) {
+  // Remove leading #
+  String h = hex.startsWith('#') ? hex.substring(1) : hex;
+  if (h.length == 3) {
+    // Expand shorthand (e.g. #abc -> #aabbcc)
+    h = h.split('').map((c) => '$c$c').join();
+  }
+  if (h.length == 6) h = h + 'FF'; // Add alpha if missing
+
+  int r = int.parse(h.substring(0, 2), radix: 16);
+  int g = int.parse(h.substring(2, 4), radix: 16);
+  int b = int.parse(h.substring(4, 6), radix: 16);
+  int a = int.parse(h.substring(6, 8), radix: 16);
+
+  switch (mode.toLowerCase()) {
+    case 'hex':
+      return '#${h.substring(0, 6)}';
+    case 'rgb':
+      return 'rgb($r, $g, $b)';
+    case 'rgba':
+      String alpha = (a / 255).toStringAsFixed(3).replaceFirst(RegExp(r'\.?0+$'), '');
+      return 'rgba($r, $g, $b, $alpha)';
+    case 'rrggbbaa':
+      return '#$h';
+    default:
+      return '#${h.substring(0, 6)}';
+  }
+}
+
 /// Main function to process all themers configs.
 Future<void> processThemersConfigs({bool verbose = false}) async {
   final (themersDir, devMode) = await getThemersDir();
@@ -77,8 +107,13 @@ Future<void> processThemersConfigs({bool verbose = false}) async {
 
   for (final file in themersFiles) {
     final themers = jsonDecode(await file.readAsString()) as Map<String, dynamic>;
+    final colorMode = (themers['color_mode'] as String?)?.toLowerCase() ?? 'hex';
     final vars = (themers['vars'] as Map?)?.cast<String, String>() ?? {};
     final items = themers['items'] as Map<String, dynamic>? ?? {};
+
+    // Convert color to requested mode
+    final convertedColor = convertColor(pokemonColor, colorMode);
+
     for (final item in items.values) {
       if (item['type'] == 'config') {
         // Template is in templates/configs/ subdir for config type
@@ -96,7 +131,7 @@ Future<void> processThemersConfigs({bool verbose = false}) async {
 
         // Prepare replacements
         final replacements = <String, String>{
-          r'$POKEMON_COLOR': pokemonColor,
+          r'$POKEMON_COLOR': convertedColor,
           r'$POKEMON_NAME': pokemonName,
           r'$WALLPAPER_PATH': wallpaperPath,
           ...vars,
@@ -150,7 +185,7 @@ Future<void> processThemersConfigs({bool verbose = false}) async {
 
         // Prepare replacements (same as config)
         final replacements = <String, String>{
-          r'$POKEMON_COLOR': pokemonColor,
+          r'$POKEMON_COLOR': convertedColor,
           r'$POKEMON_NAME': pokemonName,
           r'$WALLPAPER_PATH': wallpaperPath,
           ...vars,
