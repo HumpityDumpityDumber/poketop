@@ -1,0 +1,120 @@
+name: Build and Package Poketop
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  APP_NAME: poketop
+  APP_VERSION: ${{ github.ref_name }} # e.g. v0.0.1
+  APP_VERSION_STRIPPED: ${{ github.ref_name != '' && github.ref_name.startsWith('v') && github.ref_name.substring(1) || '0.0.1' }}
+
+jobs:
+  build-linux-packages:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Dart SDK 3.8.0
+      uses: dart-lang/setup-dart@v1
+      with:
+        sdk: '3.8.0'
+
+    - name: Get Dart dependencies
+      run: dart pub get
+
+    - name: Compile poketop binary
+      run: dart compile exe bin/poketop.dart -o poketop
+
+    - name: Prepare packaging folder
+      run: |
+        rm -rf pkg
+        mkdir -p pkg/usr/bin
+        mkdir -p pkg/usr/share/poketop/assets
+        cp poketop pkg/usr/bin/
+        cp -r assets/* pkg/usr/share/poketop/assets/
+
+    - name: Install fpm for packaging
+      run: sudo gem install --no-document fpm
+
+    - name: Build .deb package
+      run: |
+        fpm -s dir -t deb \
+          -n $APP_NAME \
+          -v ${{ env.APP_VERSION_STRIPPED }} \
+          --license GPL-3.0 \
+          --description "Poketop CLI app: picks Pokémon, sets wallpapers with swww" \
+          -C pkg .
+
+    - name: Build .rpm package
+      run: |
+        fpm -s dir -t rpm \
+          -n $APP_NAME \
+          -v ${{ env.APP_VERSION_STRIPPED }} \
+          --license GPL-3.0 \
+          --description "Poketop CLI app: picks Pokémon, sets wallpapers with swww" \
+          -C pkg .
+
+    - name: Upload .deb and .rpm packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: linux-packages
+        path: |
+          *.deb
+          *.rpm
+
+  build-arch-package:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies and Dart SDK
+      run: |
+        pacman -Sy --noconfirm dart base-devel git
+
+    - name: Get Dart dependencies and compile binary
+      run: |
+        dart pub get
+        dart compile exe bin/poketop.dart -o poketop
+
+    - name: Prepare PKGBUILD and packaging structure
+      run: |
+        mkdir -p pkg/usr/bin
+        mkdir -p pkg/usr/share/poketop/assets
+        cp poketop pkg/usr/bin/
+        cp -r assets/* pkg/usr/share/poketop/assets/
+
+        cat > PKGBUILD <<EOF
+        pkgname=poketop
+        pkgver=${{ env.APP_VERSION_STRIPPED }}
+        pkgrel=1
+        arch=('x86_64')
+        license=('GPL3')
+        depends=()
+        source=()
+        build() {
+          echo "No build needed"
+        }
+        package() {
+          install -Dm755 poketop "\$pkgdir/usr/bin/poketop"
+          mkdir -p "\$pkgdir/usr/share/poketop/assets"
+          cp -r assets/* "\$pkgdir/usr/share/poketop/assets/"
+        }
+        EOF
+
+        makepkg --printsrcinfo > .SRCINFO
+
+    - name: Build Arch package
+      run: makepkg -sf --noconfirm
+
+    - name: Upload Arch package
+      uses: actions/upload-artifact@v3
+      with:
+        name: arch-package
+        path: '*.pkg.tar.zst'
