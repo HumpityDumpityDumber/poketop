@@ -6,6 +6,94 @@
 - Finds and sets a wallpaper for the chosen Pokémon using `swww`
 - Automatically starts the `swww-daemon` if not running
 - Supports extra arguments for `swww img` via `--swww-arguments`
+- **All theming, asset, and wallpaper operations are performed locally on your machine. No network or remote operations are performed by this program.**
+
+### Installation
+
+#### Install Dart
+
+If you do not already have Dart installed, follow the instructions at [https://dart.dev/get-dart](https://dart.dev/get-dart) or:
+
+- **On Arch Linux:**
+  ```sh
+  sudo pacman -S dart
+  ```
+- **On Debian/Ubuntu:**
+  ```sh
+  sudo apt install dart
+  ```
+- **On Fedora:**
+  ```sh
+  sudo dnf install dart
+  ```
+
+#### Dependencies
+
+- [Dart SDK](https://dart.dev/get-dart) (>=3.8.0)
+- [swww](https://github.com/LGFae/swww) (for wallpaper setting)
+- (Optional, only for SVG-to-PNG/JPG conversion in var_asset): `rsvg-convert` (from `librsvg`/`librsvg2-bin`)
+
+#### Install Steps
+
+1. **Clone the repository:**
+   ```sh
+   git clone https://github.com/HumpityDumpityDumber/poketop.git
+   cd poketop
+   ```
+
+2. **Install Dart dependencies:**
+   ```sh
+   dart pub get
+   ```
+
+3. **Compile the binary:**
+   ```sh
+   dart compile exe bin/poketop.dart -o poketop
+   ```
+
+4. **Copy the binary to a directory in your `$PATH`:**
+   ```sh
+   sudo cp poketop /usr/local/bin/
+   # or for user-local install (no sudo):
+   # mkdir -p ~/.local/bin
+   # cp poketop ~/.local/bin/
+   # export PATH="$HOME/.local/bin:$PATH"
+   ```
+
+5. **Copy the contents of the assets folder to your XDG data home:**
+   ```sh
+   export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+   mkdir -p "$XDG_DATA_HOME/poketop"
+   cp -r assets/* "$XDG_DATA_HOME/poketop/"
+   ```
+
+6. **Ensure `swww` is installed:**
+   - On Arch Linux:  
+     ```sh
+     sudo pacman -S swww
+     ```
+   - On Debian/Ubuntu:  
+     ```sh
+     sudo apt install swww
+     ```
+   - On Fedora:  
+     ```sh
+     sudo dnf install swww
+     ```
+
+7. **(Optional, for SVG-to-PNG/JPG conversion in var_asset):**
+   - On Arch Linux:  
+     ```sh
+     sudo pacman -S librsvg
+     ```
+   - On Debian/Ubuntu:  
+     ```sh
+     sudo apt install librsvg2-bin
+     ```
+   - On Fedora:  
+     ```sh
+     sudo dnf install librsvg2-tools
+     ```
 
 ### Usage
 Run the app from the command line:
@@ -26,6 +114,8 @@ Options include:
     --swww-arguments — Extra arguments for swww img
 
     --template <app name> - Creates themer file for application
+
+    -p, --pokemon - choose pokemon instead of it being randomly selected
 ```
 
 **If you would like to use the project and want proper documentation on configuring the automatic theming feel free to dm `raurutuchr` on discord.**
