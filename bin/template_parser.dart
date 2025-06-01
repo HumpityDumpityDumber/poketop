@@ -148,10 +148,10 @@ Future<void> processThemersConfigs({bool verbose = false}) async {
     final vars = (themers['vars'] as Map?)?.cast<String, String>() ?? {};
     final items = themers['items'] as Map<String, dynamic>? ?? {};
 
-    // Convert color to requested mode
+    // Always use the same color mode for all color variants
     final convertedColor = convertColor(pokemonColor, colorMode);
-    final colorDark = adjustHexColor(pokemonColor, -0.2, colorMode);   // 20% darker
-    final colorLight = adjustHexColor(pokemonColor, 0.2, colorMode);   // 20% lighter
+    final colorDark = convertColor(adjustHexColor(pokemonColor, -0.2, 'rrggbbaa'), colorMode);
+    final colorLight = convertColor(adjustHexColor(pokemonColor, 0.2, 'rrggbbaa'), colorMode);
 
     for (final item in items.values) {
       if (item['type'] == 'config') {
