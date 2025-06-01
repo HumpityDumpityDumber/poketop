@@ -90,6 +90,37 @@ String convertColor(String hex, String mode) {
   }
 }
 
+/// Lightens or darkens a hex color by [amount] (-1.0 to 1.0).
+String adjustHexColor(String hex, double amount, String mode) {
+  String h = hex.startsWith('#') ? hex.substring(1) : hex;
+  if (h.length == 3) h = h.split('').map((c) => '$c$c').join();
+  if (h.length == 6) h = '${h}FF';
+  int r = int.parse(h.substring(0, 2), radix: 16);
+  int g = int.parse(h.substring(2, 4), radix: 16);
+  int b = int.parse(h.substring(4, 6), radix: 16);
+  int a = int.parse(h.substring(6, 8), radix: 16);
+
+  int adj(int v) => v.clamp(0, 255);
+  if (amount > 0) {
+    r = adj(r + ((255 - r) * amount).round());
+    g = adj(g + ((255 - g) * amount).round());
+    b = adj(b + ((255 - b) * amount).round());
+  } else {
+    r = adj(r + (r * amount).round());
+    g = adj(g + (g * amount).round());
+    b = adj(b + (b * amount).round());
+  }
+
+  String hexR = r.toRadixString(16).padLeft(2, '0');
+  String hexG = g.toRadixString(16).padLeft(2, '0');
+  String hexB = b.toRadixString(16).padLeft(2, '0');
+  String hexA = a.toRadixString(16).padLeft(2, '0');
+  String hexFull = '$hexR$hexG$hexB$hexA';
+
+  // Use the same color mode as requested
+  return convertColor('#$hexFull', mode);
+}
+
 /// Main function to process all themers configs.
 Future<void> processThemersConfigs({bool verbose = false}) async {
   final (themersDir, devMode) = await getThemersDir();
@@ -115,6 +146,8 @@ Future<void> processThemersConfigs({bool verbose = false}) async {
 
     // Convert color to requested mode
     final convertedColor = convertColor(pokemonColor, colorMode);
+    final colorDark = adjustHexColor(pokemonColor, -0.2, colorMode);   // 20% darker
+    final colorLight = adjustHexColor(pokemonColor, 0.2, colorMode);   // 20% lighter
 
     for (final item in items.values) {
       if (item['type'] == 'config') {
@@ -134,6 +167,8 @@ Future<void> processThemersConfigs({bool verbose = false}) async {
         // Prepare replacements
         final replacements = <String, String>{
           r'$POKEMON_COLOR': convertedColor,
+          r'$POKEMON_COLOR_DARK': colorDark,
+          r'$POKEMON_COLOR_LIGHT': colorLight,
           r'$POKEMON_NAME': pokemonName,
           r'$WALLPAPER_PATH': wallpaperPath,
           ...vars,
@@ -188,6 +223,8 @@ Future<void> processThemersConfigs({bool verbose = false}) async {
         // Prepare replacements (same as config)
         final replacements = <String, String>{
           r'$POKEMON_COLOR': convertedColor,
+          r'$POKEMON_COLOR_DARK': colorDark,
+          r'$POKEMON_COLOR_LIGHT': colorLight,
           r'$POKEMON_NAME': pokemonName,
           r'$WALLPAPER_PATH': wallpaperPath,
           ...vars,
