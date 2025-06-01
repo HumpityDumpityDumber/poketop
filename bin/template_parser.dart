@@ -47,14 +47,18 @@ Future<String> getWallpaperPath(String pokemonName, bool devMode) async {
 }
 
 /// Replaces variables in the template string.
+/// Ensures longer variable names are replaced first to avoid substring collisions.
 String replaceVars(
   String template,
   Map<String, String> replacements,
 ) {
   String result = template;
-  replacements.forEach((key, value) {
-    result = result.replaceAll(key, value);
-  });
+  // Sort keys by descending length to replace longer vars first
+  final sortedKeys = replacements.keys.toList()
+    ..sort((a, b) => b.length.compareTo(a.length));
+  for (final key in sortedKeys) {
+    result = result.replaceAll(key, replacements[key]!);
+  }
   return result;
 }
 

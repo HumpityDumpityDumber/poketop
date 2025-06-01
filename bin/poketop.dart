@@ -7,7 +7,7 @@ import 'swww_wrapper.dart';
 import 'template_init.dart';
 import 'template_parser.dart';
 
-const String version = '0.0.1';
+const String version = '1.0.0'; // Update this to match pubspec.yaml
 
 ArgParser buildParser() {
   return ArgParser()
